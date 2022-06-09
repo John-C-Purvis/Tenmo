@@ -73,8 +73,8 @@ public class App {
                 viewPendingRequests();
             } else if (menuSelection == 4) {
                 sendBucks();
-            } else if (menuSelection == 5) {
-                requestBucks();
+//            } else if (menuSelection == 5) {
+//                requestBucks();
             } else if (menuSelection == 0) {
                 continue;
             } else {
@@ -86,7 +86,7 @@ public class App {
 
 	private void viewCurrentBalance() {
 		// TODO Auto-generated method stub
-		
+        
 	}
 
 	private void viewTransferHistory() {
@@ -104,9 +104,9 @@ public class App {
 		
 	}
 
-	private void requestBucks() {
-		// TODO Auto-generated method stub
-		
-	}
+//	private void requestBucks() {
+//		// TODO Auto-generated method stub
+//
+//	}
 
 }
