@@ -24,13 +24,7 @@ public class AccountController {
 
     @GetMapping(path = "/{id}")
     public Account getAccountById(@PathVariable long id) {
-        for(Account account : accounts) {
-            if(account.getAccountId() == id) {
-                return account;
-            }
-        }
-        System.out.println("No account was found by the given ID");
-        return null;
+        return accountDao.getAccount(id);
     }
 
     @PostMapping
