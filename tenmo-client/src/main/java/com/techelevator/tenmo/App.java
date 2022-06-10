@@ -1,10 +1,13 @@
 package com.techelevator.tenmo;
 
+import com.techelevator.tenmo.model.Account;
 import com.techelevator.tenmo.model.AuthenticatedUser;
 import com.techelevator.tenmo.model.UserCredentials;
 import com.techelevator.tenmo.services.AppService;
 import com.techelevator.tenmo.services.AuthenticationService;
 import com.techelevator.tenmo.services.ConsoleService;
+
+import java.util.List;
 
 public class App {
 
@@ -94,6 +97,7 @@ public class App {
 
 	private void viewTransferHistory() {
 		// TODO Auto-generated method stub
+
 		
 	}
 
@@ -104,7 +108,14 @@ public class App {
 
 	private void sendBucks() {
 		// TODO Auto-generated method stub
-		
+
+		String searchTerm = consoleService.promptForString(
+                "Please enter the username you'd like to send TEnmo Bucks to: ");
+        List<Account> accounts = appService.getAccountsByUsernameSearch(searchTerm);
+        for (Account account : accounts) {
+            System.out.println(account.getUserId() +
+                    String.valueOf(appService.getUserByAccountId(account.getUserId())));
+        }
 	}
 
 //	private void requestBucks() {

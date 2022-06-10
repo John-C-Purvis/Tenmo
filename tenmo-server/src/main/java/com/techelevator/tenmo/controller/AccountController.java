@@ -1,36 +1,41 @@
 package com.techelevator.tenmo.controller;
 
 import com.techelevator.tenmo.dao.AccountDao;
+import com.techelevator.tenmo.dao.UserDao;
 import com.techelevator.tenmo.model.Account;
+import com.techelevator.tenmo.model.User;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
 @RestController
-@RequestMapping(path = "/account")
+@RequestMapping
 public class AccountController {
 
     AccountDao accountDao;
-    private List<Account> accounts;
+    UserDao userDao;
 
     public AccountController(AccountDao accountDao) {
         this.accountDao = accountDao;
     }
 
-    @GetMapping
+    @GetMapping(path = "/account")
     public List<Account> getAccounts() {
         return accountDao.getAllAccounts();
     }
 
-    @GetMapping(path = "/{id}")
+    @GetMapping(path = "/account/{id}")
     public Account getAccountById(@PathVariable long id) {
         return accountDao.getAccount(id);
     }
 
-    @PostMapping
-    public void addAccount(Account account) {
-        if (account != null) {
-            accounts.add(account);
-        }
+    @GetMapping(path = "/account/search/{searchTerm}")
+    public List<Account> getAccountsByUsernameSearch(@PathVariable String searchTerm) {
+        return accountDao.getAccountsByUsernameSearch(searchTerm);
+    }
+
+    @GetMapping(path = "/users/{id}")
+    public User getUserByAccountId(@PathVariable long id) {
+        return userDao.findUserByAccountId(id);
     }
 }

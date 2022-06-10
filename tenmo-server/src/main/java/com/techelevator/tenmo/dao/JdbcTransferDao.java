@@ -21,7 +21,10 @@ public class JdbcTransferDao implements TransferDao{
     @Override
     public Transfer getTransfer(long transferId) {
         Transfer transfer = null;
-        String sql = "SELECT transfer_id, transfer_type_id, transfer_status_id, account_from, account_to, amount FROM transfer WHERE transfer_id = ?;";
+        String sql =
+                "SELECT transfer_id, account_from, account_to, amount, transfer_type_id, transfer_status_id " +
+                        "FROM transfer " +
+                        "WHERE transfer.transfer_id = ?;";
         SqlRowSet results = jdbcTemplate.queryForRowSet(sql, transferId);
         if (results.next()) {
             transfer = mapRowToAccount(results);
@@ -30,10 +33,14 @@ public class JdbcTransferDao implements TransferDao{
     }
 
     @Override
-    public List<Transfer> getAllTransfers() {
+    public List<Transfer> getAllTransfersByUserID(long userId) {
         List<Transfer> transfers = new ArrayList<>();
-        String sql = "SELECT transfer_id, transfer_type_id, transfer_status_id, account_from, account_to, amount FROM transfer;";
-        SqlRowSet results = jdbcTemplate.queryForRowSet(sql);
+        String sql =
+                "SELECT transfer_id, account_from, account_to, amount, transfer_type_id, transfer_status_id " +
+                "FROM transfer " +
+                "JOIN account ON transfer.account_from = account.account_id OR transfer.account_to = account.account_id " +
+                "WHERE account.user_id = ?;";
+        SqlRowSet results = jdbcTemplate.queryForRowSet(sql, userId);
         while (results.next()) {
             transfers.add(mapRowToAccount(results));
         }
@@ -42,7 +49,7 @@ public class JdbcTransferDao implements TransferDao{
 
     @Override
     public Transfer createTransfer(Transfer transfer) {
-        String sql = "INSERT INTO transfer (transfer_type_id, transfer_status_id, account_from, account_to, amount) VALUES (?, ?)  RETURNING account_id;";
+        String sql = "INSERT INTO transfer (transfer_type_id, transfer_status_id, account_from, account_to, amount) VALUES (?, ?) RETURNING transfer_id;";
         long transferId = jdbcTemplate.queryForObject(sql, Long.class,
                 transfer.getTransferTypeId(),
                 transfer.getTransferStatusId(),
@@ -74,6 +81,7 @@ public class JdbcTransferDao implements TransferDao{
         return numberOfRows == 1;
     }
 
+    // May have to change the set methods / variables.
     private Transfer mapRowToAccount(SqlRowSet results) {
         Transfer transfer = new Transfer();
         transfer.setTransferId(results.getLong("transfer_id"));

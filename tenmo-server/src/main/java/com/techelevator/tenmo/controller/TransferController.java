@@ -36,10 +36,14 @@ public class TransferController {
         return null;
     }
 
+    /*
+    @GetMapping(path =
+     */
+
     @PostMapping
     public void addTransfer(Transfer transfer) {
         if (transfer != null) {
-            transfers.add(transfer);
+            transferDao.createTransfer(transfer);
         }
     }
 }

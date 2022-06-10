@@ -1,9 +1,13 @@
 package com.techelevator.tenmo.services;
 
 import com.techelevator.tenmo.model.Account;
+import com.techelevator.tenmo.model.User;
 import org.springframework.web.client.RestTemplate;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 public class AppService {
     private final String baseUrl;
@@ -16,18 +20,22 @@ public class AppService {
     public BigDecimal getBalance(long userId) {
         return restTemplate.getForObject(baseUrl + "/account/" + userId, Account.class).getBalance();
     }
-/*
-public AuthenticatedUser login(UserCredentials credentials) {
-        HttpEntity<UserCredentials> entity = createCredentialsEntity(credentials);
-        AuthenticatedUser user = null;
-        try {
-            ResponseEntity<AuthenticatedUser> response =
-                    restTemplate.exchange(baseUrl + "login", HttpMethod.POST, entity, AuthenticatedUser.class);
-            user = response.getBody();
-        } catch (RestClientResponseException | ResourceAccessException e) {
-            BasicLogger.log(e.getMessage());
-        }
-        return user;
+
+    public List<Account> getAccountsByUsernameSearch(String searchTerm) {
+        return new ArrayList<>(Arrays.asList(restTemplate.getForObject(baseUrl + "/account/search/" + searchTerm, Account[].class)));
     }
- */
+
+    public User getUserByAccountId(long id) {
+        return restTemplate.getForObject(baseUrl + "/users/" + id, User.class);
+    }
+    /*
+    public List<Transfer> getTransfers(long userId/accountId) {}
+
+    public Transfer getTransferDetails(long transferId) {}
+
+    public List<Account> getAccounts()
+
+
+     */
+
 }

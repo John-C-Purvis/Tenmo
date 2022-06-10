@@ -8,6 +8,8 @@ public interface AccountDao {
 
     Account getAccount(long accountId);
 
+    List<Account> getAccountsByUsernameSearch(String searchTerm);
+
     List<Account> getAllAccounts();
 
     Account createAccount(Account account);
