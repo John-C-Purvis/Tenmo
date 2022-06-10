@@ -114,7 +114,7 @@ public class App {
         List<Account> accounts = appService.getAccountsByUsernameSearch(searchTerm);
         for (Account account : accounts) {
             System.out.println(account.getUserId() +
-                    String.valueOf(appService.getUserByAccountId(account.getUserId())));
+                    String.valueOf(appService.getUserByAccountId(account.getAccountId())));
         }
 	}
 
