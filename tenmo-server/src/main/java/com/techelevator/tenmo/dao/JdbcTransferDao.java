@@ -1,14 +1,15 @@
 package com.techelevator.tenmo.dao;
 
-import com.techelevator.tenmo.model.Account;
 import com.techelevator.tenmo.model.Transfer;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.rowset.SqlRowSet;
+import org.springframework.stereotype.Component;
 
 import javax.sql.DataSource;
 import java.util.ArrayList;
 import java.util.List;
 
+@Component
 public class JdbcTransferDao implements TransferDao{
 
     private final JdbcTemplate jdbcTemplate;
@@ -18,7 +19,7 @@ public class JdbcTransferDao implements TransferDao{
     }
 
     @Override
-    public Transfer getTransfer(int transferId) {
+    public Transfer getTransfer(long transferId) {
         Transfer transfer = null;
         String sql = "SELECT transfer_id, transfer_type_id, transfer_status_id, account_from, account_to, amount FROM transfer WHERE transfer_id = ?;";
         SqlRowSet results = jdbcTemplate.queryForRowSet(sql, transferId);
@@ -42,7 +43,7 @@ public class JdbcTransferDao implements TransferDao{
     @Override
     public Transfer createTransfer(Transfer transfer) {
         String sql = "INSERT INTO transfer (transfer_type_id, transfer_status_id, account_from, account_to, amount) VALUES (?, ?)  RETURNING account_id;";
-        int transferId = jdbcTemplate.queryForObject(sql, Integer.class,
+        long transferId = jdbcTemplate.queryForObject(sql, Long.class,
                 transfer.getTransferTypeId(),
                 transfer.getTransferStatusId(),
                 transfer.getAccountFrom(),
@@ -75,8 +76,8 @@ public class JdbcTransferDao implements TransferDao{
 
     private Transfer mapRowToAccount(SqlRowSet results) {
         Transfer transfer = new Transfer();
-        transfer.setTransferId(results.getInt("transfer_id"));
-        transfer.setTransferTypeId(results.getInt("transfer_type_id"));
+        transfer.setTransferId(results.getLong("transfer_id"));
+        transfer.setTransferTypeId(results.getLong("transfer_type_id"));
         transfer.setTransferStatusId(results.getLong("transfer_status_id"));
         transfer.setAccountFrom(results.getLong("account_from"));
         transfer.setAccountTo(results.getLong("account_to"));

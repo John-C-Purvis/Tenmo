@@ -1,5 +1,6 @@
 package com.techelevator.tenmo.controller;
 
+import com.techelevator.tenmo.dao.AccountDao;
 import com.techelevator.tenmo.model.Account;
 import org.springframework.web.bind.annotation.*;
 
@@ -9,14 +10,16 @@ import java.util.List;
 @RequestMapping(path = "/account")
 public class AccountController {
 
+    AccountDao accountDao;
     private List<Account> accounts;
 
-    public AccountController() {
+    public AccountController(AccountDao accountDao) {
+        this.accountDao = accountDao;
     }
 
     @GetMapping
     public List<Account> getAccounts() {
-        return accounts;
+        return accountDao.getAllAccounts();
     }
 
     @GetMapping(path = "/{id}")

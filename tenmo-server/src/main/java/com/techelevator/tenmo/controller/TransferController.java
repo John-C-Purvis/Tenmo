@@ -1,5 +1,7 @@
 package com.techelevator.tenmo.controller;
 
+import com.techelevator.tenmo.dao.JdbcTransferDao;
+import com.techelevator.tenmo.dao.TransferDao;
 import com.techelevator.tenmo.model.Account;
 import com.techelevator.tenmo.model.Transfer;
 import org.springframework.web.bind.annotation.*;
@@ -10,9 +12,12 @@ import java.util.List;
 @RequestMapping(path = "/transfer")
 public class TransferController {
 
+    TransferDao transferDao;
+
     private List<Transfer> transfers;
 
-    public TransferController() {
+    public TransferController(TransferDao transferDao) {
+        this.transferDao = transferDao;
     }
 
     @GetMapping
