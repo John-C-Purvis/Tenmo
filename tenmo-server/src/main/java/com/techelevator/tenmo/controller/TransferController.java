@@ -41,9 +41,10 @@ public class TransferController {
      */
 
     @PostMapping
-    public void addTransfer(@RequestBody Transfer transfer) {
+    public Transfer addTransfer(@RequestBody Transfer transfer) {
         if (transfer != null) {
-            transferDao.createTransfer(transfer);
+            return transferDao.createTransfer(transfer);
         }
+        return null;
     }
 }

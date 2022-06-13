@@ -160,9 +160,10 @@ public class App {
         transfer.setAccountFrom(currentAccount.getAccountId());
         transfer.setAccountTo(targetAccount.getAccountId());
         transfer.setAmount(transferAmount);
+        System.out.println(transfer.toString());
         transfer = appService.createTransfer(transfer);
 
-        System.out.println(transfer.toString());
+        System.out.println(transfer);
 
     }
 
