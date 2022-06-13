@@ -2,11 +2,13 @@ package com.techelevator.tenmo;
 
 import com.techelevator.tenmo.model.Account;
 import com.techelevator.tenmo.model.AuthenticatedUser;
+import com.techelevator.tenmo.model.Transfer;
 import com.techelevator.tenmo.model.UserCredentials;
 import com.techelevator.tenmo.services.AppService;
 import com.techelevator.tenmo.services.AuthenticationService;
 import com.techelevator.tenmo.services.ConsoleService;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 public class App {
@@ -106,19 +108,63 @@ public class App {
 		
 	}
 
-	private void sendBucks() {
-		// TODO Auto-generated method stub
+    private void sendBucks() {
+        // TODO Auto-generated method stub
 
-		String searchTerm = consoleService.promptForString(
+        Account currentAccount = appService.getAccountById(currentUser.getUser().getId());
+        String searchTerm = consoleService.promptForString(
                 "Please enter the username you'd like to send TEnmo Bucks to: ");
+        System.out.println("-------------------------------------------\n" +
+                "Account\n" +
+                "ID          Name\n" +
+                "-------------------------------------------");
         List<Account> accounts = appService.getAccountsByUsernameSearch(searchTerm);
         for (Account account : accounts) {
             System.out.println(account.getAccountId() + "     " +
-                    String.valueOf(appService.getUserByAccountId(account.getAccountId()).getUsername()));
+                    (appService.getUserByAccountId(account.getAccountId()).getUsername()));
+        }
+        System.out.println("---------");
+        long accountSelection = consoleService.promptForInt(
+                "Enter ID of account you are sending to (0 to cancel):");
+        Account targetAccount = null;
+        for(Account account : accounts) {
+            if(account.getAccountId() == accountSelection) {
+                targetAccount = account;
+                break;
+            }
+        }
+        if(targetAccount == null) {
+            System.out.println("No account was selected.");
+            return;
+        }
+        if(targetAccount.getUserId() == currentUser.getUser().getId()) {
+            System.out.println("Self-selection is not permitted.");
+            return;
+        }
+        BigDecimal transferAmount = consoleService.promptForBigDecimal("Enter amount:");
+        if(transferAmount.compareTo(BigDecimal.valueOf(0.00)) <= 0) {
+            System.out.println("Transfer canceled (amount must be greater than 0.00)");
+            return;
         }
 
-        
-	}
+        //check for availability of funds in currentUser's account
+        if (currentAccount.getBalance().compareTo(transferAmount) < 0) {
+            System.out.println("You don't have enough TE Bucks.");
+            return;
+        }
+
+        //initiate transfer of transferAmount from currentUser's account to targetAccount.balance
+        Transfer transfer = new Transfer();
+        transfer.setTransferTypeId(2);
+        transfer.setTransferStatusId(2);
+        transfer.setAccountFrom(currentAccount.getAccountId());
+        transfer.setAccountTo(targetAccount.getAccountId());
+        transfer.setAmount(transferAmount);
+        transfer = appService.createTransfer(transfer);
+
+        System.out.println(transfer.toString());
+
+    }
 
 //	private void requestBucks() {
 //		// TODO Auto-generated method stub

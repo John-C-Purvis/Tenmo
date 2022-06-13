@@ -1,7 +1,11 @@
 package com.techelevator.tenmo.services;
 
 import com.techelevator.tenmo.model.Account;
+import com.techelevator.tenmo.model.Transfer;
 import com.techelevator.tenmo.model.User;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
 import org.springframework.web.client.RestTemplate;
 
 import java.math.BigDecimal;
@@ -27,6 +31,18 @@ public class AppService {
 
     public User getUserByAccountId(long id) {
         return restTemplate.getForObject(baseUrl + "/users/" + id, User.class);
+    }
+
+    public Transfer createTransfer(Transfer transfer) {
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+
+        HttpEntity<Transfer> entity = new HttpEntity<>(transfer, headers);
+        return restTemplate.postForObject(baseUrl + "/transfer", entity, Transfer.class);
+    }
+
+    public Account getAccountById(long userId) {
+        return restTemplate.getForObject(baseUrl + "/account/" + userId, Account.class);
     }
     /*
     public List<Transfer> getTransfers(long userId/accountId) {}
