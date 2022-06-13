@@ -4,6 +4,7 @@ import com.techelevator.tenmo.model.Transfer;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.rowset.SqlRowSet;
 import org.springframework.stereotype.Component;
+import org.springframework.web.bind.annotation.RequestBody;
 
 import javax.sql.DataSource;
 import java.util.ArrayList;
@@ -48,8 +49,9 @@ public class JdbcTransferDao implements TransferDao{
     }
 
     @Override
-    public Transfer createTransfer(Transfer transfer) {
-        String sql = "INSERT INTO transfer (transfer_type_id, transfer_status_id, account_from, account_to, amount) VALUES (?, ?) RETURNING transfer_id;";
+    public Transfer createTransfer(@RequestBody Transfer transfer) {
+        String sql = "INSERT INTO transfer (transfer_type_id, transfer_status_id, account_from, " +
+                "account_to, amount) VALUES (?, ?, ?, ?, ?) RETURNING transfer_id;";
         long transferId = jdbcTemplate.queryForObject(sql, Long.class,
                 transfer.getTransferTypeId(),
                 transfer.getTransferStatusId(),

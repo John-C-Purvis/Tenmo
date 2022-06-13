@@ -39,4 +39,9 @@ public class AccountController {
     public User getUserByAccountId(@PathVariable long id) {
         return userDao.findUserByAccountId(id);
     }
+
+    @PutMapping(path = "/users/{id}")
+    public boolean updateAccount(@PathVariable long id, Account account) {
+        return accountDao.updateAccount(account);
+    }
 }

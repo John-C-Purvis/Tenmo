@@ -44,6 +44,10 @@ public class AppService {
     public Account getAccountById(long userId) {
         return restTemplate.getForObject(baseUrl + "/account/" + userId, Account.class);
     }
+
+    public void updateAccount(long accountId, Account account) {
+        restTemplate.put(baseUrl + "/account/" + accountId, account);
+    }
     /*
     public List<Transfer> getTransfers(long userId/accountId) {}
 
