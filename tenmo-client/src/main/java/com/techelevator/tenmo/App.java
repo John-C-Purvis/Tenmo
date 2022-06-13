@@ -113,9 +113,11 @@ public class App {
                 "Please enter the username you'd like to send TEnmo Bucks to: ");
         List<Account> accounts = appService.getAccountsByUsernameSearch(searchTerm);
         for (Account account : accounts) {
-            System.out.println(account.getUserId() +
-                    String.valueOf(appService.getUserByAccountId(account.getAccountId())));
+            System.out.println(account.getAccountId() + "     " +
+                    String.valueOf(appService.getUserByAccountId(account.getAccountId()).getUsername()));
         }
+
+        
 	}
 
 //	private void requestBucks() {
