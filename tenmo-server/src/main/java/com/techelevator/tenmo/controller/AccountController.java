@@ -15,8 +15,9 @@ public class AccountController {
     AccountDao accountDao;
     UserDao userDao;
 
-    public AccountController(AccountDao accountDao) {
+    public AccountController(AccountDao accountDao, UserDao userDao) {
         this.accountDao = accountDao;
+        this.userDao = userDao;
     }
 
     @GetMapping(path = "/account")
