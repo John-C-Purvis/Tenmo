@@ -4,6 +4,7 @@ import com.techelevator.tenmo.model.Account;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.rowset.SqlRowSet;
 import org.springframework.stereotype.Component;
+import org.springframework.web.bind.annotation.RequestBody;
 
 import javax.sql.DataSource;
 import java.util.ArrayList;
@@ -64,10 +65,10 @@ public class JdbcAccountDao implements AccountDao{
     }
 
     @Override
-    public boolean updateAccount(Account account) {
-        String sql = "UPDATE account SET user_id = ?, balance = ? WHERE account_id = ?;";
-        int numberOfRows = jdbcTemplate.update(sql, account.getUserId(), account.getBalance(), account.getAccountId());
-        return numberOfRows == 1;
+    public void updateAccount(@RequestBody Account account) {
+        String sql = "UPDATE account SET account_id = ?, user_id = ?, balance = ? WHERE account_id = ?;";
+        jdbcTemplate.update(
+                sql, account.getAccountId(), account.getUserId(), account.getBalance(), account.getAccountId());
     }
 
     private Account mapRowToAccount(SqlRowSet results) {

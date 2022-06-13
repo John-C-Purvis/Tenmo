@@ -41,7 +41,7 @@ public class AccountController {
     }
 
     @PutMapping(path = "/users/{id}")
-    public boolean updateAccount(@PathVariable long id, Account account) {
-        return accountDao.updateAccount(account);
+    public void updateAccount(@PathVariable long id, @RequestBody Account account) {
+        accountDao.updateAccount(account);
     }
 }

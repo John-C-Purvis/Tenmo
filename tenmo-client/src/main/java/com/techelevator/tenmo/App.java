@@ -147,23 +147,42 @@ public class App {
             return;
         }
 
-        //check for availability of funds in currentUser's account
+        // Check for availability of funds in currentUser's account
         if (currentAccount.getBalance().compareTo(transferAmount) < 0) {
             System.out.println("You don't have enough TE Bucks.");
             return;
         }
 
-        //initiate transfer of transferAmount from currentUser's account to targetAccount.balance
+        // Set transfer details
         Transfer transfer = new Transfer();
         transfer.setTransferTypeId(2);
         transfer.setTransferStatusId(2);
         transfer.setAccountFrom(currentAccount.getAccountId());
         transfer.setAccountTo(targetAccount.getAccountId());
         transfer.setAmount(transferAmount);
-        System.out.println(transfer.toString());
+
+        // Initiate transfer of transferAmount from currentUser's account to targetAccount.balance
         transfer = appService.createTransfer(transfer);
 
-        System.out.println(transfer);
+        // Update account object balances
+        currentAccount.setBalance(currentAccount.getBalance().subtract(transferAmount));
+        targetAccount.setBalance(targetAccount.getBalance().add(transferAmount));
+
+        // Update DB account balances
+        appService.updateAccount(currentAccount.getAccountId(), currentAccount);
+        appService.updateAccount(targetAccount.getAccountId(), targetAccount);
+
+        System.out.println("--------------------------------------------\n" +
+                "Transfer Details\n" +
+                "--------------------------------------------\n" +
+                " Id: " + transfer.getTransferId() + "\n" +
+                " From: " + currentUser.getUser().getUsername() + "\n" +
+                " To: " + appService.getUserByAccountId(targetAccount.getAccountId()).getUsername() + "\n" +
+                " Type: Send" + "\n" +
+                " Status: Approved" + "\n" +
+                " Amount: " + transfer.getAmount()
+        );
+
 
     }
 

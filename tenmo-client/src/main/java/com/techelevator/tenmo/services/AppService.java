@@ -46,7 +46,11 @@ public class AppService {
     }
 
     public void updateAccount(long accountId, Account account) {
-        restTemplate.put(baseUrl + "/account/" + accountId, account);
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+
+        HttpEntity<Account> entity = new HttpEntity<>(account, headers);
+        restTemplate.put(baseUrl + "/account/" + accountId, entity);
     }
     /*
     public List<Transfer> getTransfers(long userId/accountId) {}
