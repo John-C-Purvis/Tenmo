@@ -9,6 +9,7 @@ import com.techelevator.tenmo.model.User;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
+import java.security.Principal;
 import java.util.List;
 
 @RestController
@@ -37,8 +38,11 @@ public class TenmoController {
     }
 
     @GetMapping(path = "/account/{id}")
-    public Account getAccountById(@PathVariable long id) {
-        return accountDao.getAccount(id);
+    public Account getAccountById(@PathVariable long id, Principal principal) throws Exception {
+        if (principal.getName().equals(getUserByAccountId(accountDao.getAccount(id).getAccountId()).getUsername())){
+            return accountDao.getAccount(id);
+        }
+        throw new Exception("Unauthorized");
     }
 
     @GetMapping(path = "/account/search/{searchTerm}")

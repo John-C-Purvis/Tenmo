@@ -3,9 +3,7 @@ package com.techelevator.tenmo.services;
 import com.techelevator.tenmo.model.Account;
 import com.techelevator.tenmo.model.Transfer;
 import com.techelevator.tenmo.model.User;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.MediaType;
+import org.springframework.http.*;
 import org.springframework.web.client.RestTemplate;
 
 import java.math.BigDecimal;
@@ -21,21 +19,26 @@ public class AppService {
         this.baseUrl = url;
     }
 
-    public BigDecimal getBalance(long userId) {
-        return restTemplate.getForObject(baseUrl + "/account/" + userId, Account.class).getBalance();
+    public BigDecimal getBalance(long userId, String token) {
+        HttpEntity<Void> entity = makeAuthEntity(token);
+        return restTemplate.exchange(
+                baseUrl + "/account/" + userId, HttpMethod.GET, entity, Account.class).getBody().getBalance();
     }
 
-    public List<Account> getAccountsByUsernameSearch(String searchTerm) {
+    public List<Account> getAccountsByUsernameSearch(String searchTerm, String token) {
+        HttpEntity<Void> entity = makeAuthEntity(token);
         return new ArrayList<>(Arrays.asList(
-                restTemplate.getForObject(baseUrl + "/account/search/" + searchTerm, Account[].class)));
+                restTemplate.exchange(baseUrl + "/account/search/" + searchTerm,HttpMethod.GET, entity, Account[].class).getBody()));
     }
 
-    public User getUserByAccountId(long id) {
-        return restTemplate.getForObject(baseUrl + "/users/" + id, User.class);
+    public User getUserByAccountId(long id, String token) {
+        HttpEntity<Void> entity = makeAuthEntity(token);
+        return restTemplate.exchange(baseUrl + "/users/" + id, HttpMethod.GET, entity, User.class).getBody();
     }
 
-    public Account getAccountById(long userId) {
-        return restTemplate.getForObject(baseUrl + "/account/" + userId, Account.class);
+    public Account getAccountById(long userId, String token) {
+        HttpEntity<Void> entity = makeAuthEntity(token);
+        return restTemplate.exchange(baseUrl + "/account/" + userId, HttpMethod.GET, entity, Account.class).getBody();
     }
 
     public void updateAccount(long accountId, Account account) {
@@ -54,8 +57,15 @@ public class AppService {
         return restTemplate.postForObject(baseUrl + "/transfer", entity, Transfer.class);
     }
 
-    public List<Transfer> getTransfersByAccountId(long id) {
+    public List<Transfer> getTransfersByAccountId(long id, String token) {
+        HttpEntity<Void> entity = makeAuthEntity(token);
         return new ArrayList<>(Arrays.asList(
                 restTemplate.getForObject(baseUrl + "/transfer/account/" + id, Transfer[].class)));
+    }
+
+    private HttpEntity<Void> makeAuthEntity(String token) {
+        HttpHeaders headers = new HttpHeaders();
+        headers.setBearerAuth(token);
+        return new HttpEntity<>(headers);
     }
 }

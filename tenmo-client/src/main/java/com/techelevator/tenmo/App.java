@@ -94,14 +94,14 @@ public class App {
 	private void viewCurrentBalance() {
 		// TODO Auto-generated method stub
         System.out.println("Your current account balance is: $" +
-                appService.getBalance(currentUser.getUser().getId()));
+                appService.getBalance(currentUser.getUser().getId(), currentUser.getToken()));
 	}
 
 	private void viewTransferHistory() {
 		// TODO Auto-generated method stub
         int transferChoice = -1;
-        Account account = appService.getAccountById(currentUser.getUser().getId());
-        List<Transfer> transfers = appService.getTransfersByAccountId(account.getAccountId());
+        Account account = appService.getAccountById(currentUser.getUser().getId(), currentUser.getToken());
+        List<Transfer> transfers = appService.getTransfersByAccountId(account.getAccountId(), currentUser.getToken());
 
         // Print transfers
         System.out.println(
@@ -113,7 +113,7 @@ public class App {
         for (Transfer transfer : transfers) {
             long tId = transfer.getTransferId();
             String tDirection = (transfer.getAccountFrom() == account.getAccountId()) ? "To:" : "From:";
-            String tParty = (tDirection.equals("To:")) ? appService.getUserByAccountId(transfer.getAccountTo()).getUsername() : appService.getUserByAccountId(transfer.getAccountFrom()).getUsername();
+            String tParty = (tDirection.equals("To:")) ? appService.getUserByAccountId(transfer.getAccountTo(), currentUser.getToken()).getUsername() : appService.getUserByAccountId(transfer.getAccountFrom(), currentUser.getToken()).getUsername();
             BigDecimal tMoney = transfer.getAmount();
             System.out.println(String.format("%-12s%-6s%-12s%13s", tId, tDirection, tParty, "$" + tMoney));
         }
@@ -142,8 +142,8 @@ public class App {
                     "Transfer Details\n" +
                     "--------------------------------------------\n" +
                     String.format("%-8s%-36s\n", "Id:", selectedTransfer.getTransferId()) +
-                    String.format("%-8s%-36s\n", "From:", appService.getUserByAccountId(selectedTransfer.getAccountFrom()).getUsername()) +
-                    String.format("%-8s%-36s\n", "To:", appService.getUserByAccountId(selectedTransfer.getAccountTo()).getUsername()) +
+                    String.format("%-8s%-36s\n", "From:", appService.getUserByAccountId(selectedTransfer.getAccountFrom(), currentUser.getToken()).getUsername()) +
+                    String.format("%-8s%-36s\n", "To:", appService.getUserByAccountId(selectedTransfer.getAccountTo(), currentUser.getToken()).getUsername()) +
                     String.format("%-8s%-36s\n", "Type:", selectedTransfer.getTransferTypeId() == 1 ? "Request" : "Send") +
                     String.format("%-8s%-36s\n", "Status:",
                             selectedTransfer.getTransferStatusId() == 1 ? "Pending" :
@@ -165,17 +165,17 @@ public class App {
     private void sendBucks() {
         // TODO Auto-generated method stub
 
-        Account currentAccount = appService.getAccountById(currentUser.getUser().getId());
+        Account currentAccount = appService.getAccountById(currentUser.getUser().getId(), currentUser.getToken());
         String searchTerm = consoleService.promptForString(
                 "Please enter the username you'd like to send TEnmo Bucks to: ");
         System.out.println("-------------------------------------------\n" +
                 "Account\n" +
                 "ID          Name\n" +
                 "-------------------------------------------");
-        List<Account> accounts = appService.getAccountsByUsernameSearch(searchTerm);
+        List<Account> accounts = appService.getAccountsByUsernameSearch(searchTerm, currentUser.getToken());
         for (Account account : accounts) {
             System.out.println(account.getAccountId() + "     " +
-                    (appService.getUserByAccountId(account.getAccountId()).getUsername()));
+                    (appService.getUserByAccountId(account.getAccountId(), currentUser.getToken()).getUsername()));
         }
         System.out.println("---------");
         long accountSelection = consoleService.promptForInt(
@@ -231,7 +231,7 @@ public class App {
                 "--------------------------------------------\n" +
                 " Id: " + transfer.getTransferId() + "\n" +
                 " From: " + currentUser.getUser().getUsername() + "\n" +
-                " To: " + appService.getUserByAccountId(targetAccount.getAccountId()).getUsername() + "\n" +
+                " To: " + appService.getUserByAccountId(targetAccount.getAccountId(), currentUser.getToken()).getUsername() + "\n" +
                 " Type: Send" + "\n" +
                 " Status: Approved" + "\n" +
                 " Amount: " + transfer.getAmount() +
