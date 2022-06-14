@@ -64,9 +64,9 @@ public class TenmoController {
      * TransferDao methods
      */
 
-    @GetMapping(path = "/transfer")
-    public List<Transfer> getTransfers() {
-        return null;
+    @GetMapping(path = "/users/{accountId}/transfers")
+    public List<Transfer> getTransfers(@PathVariable long accountId) {
+        return transferDao.getAllTransfersByAccountID(accountId);
     }
 
     @GetMapping(path = "/transfer/{id}")

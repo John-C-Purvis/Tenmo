@@ -99,19 +99,58 @@ public class App {
 
 	private void viewTransferHistory() {
 		// TODO Auto-generated method stub
-        int menuSelection = -1;
+        int transferChoice = -1;
         Account account = appService.getAccountById(currentUser.getUser().getId());
         List<Transfer> transfers = appService.getTransfersByAccountId(account.getAccountId());
 
         // Print transfers
-        consoleService.printTransferMenu();
-        menuSelection = consoleService.promptForMenuSelection("Please choose an option: ");
-        if (menuSelection == 1) {
-            // Prompt for transfer id
-            int transferId;
+        System.out.println(
+                "\n-------------------------------------------\n" +
+                "Transfers\n" +
+                String.format("%-12s%-24s%7s\n", "ID", "From/To", "Amount") +
+                "-------------------------------------------");
+
+        for (Transfer transfer : transfers) {
+            long tId = transfer.getTransferId();
+            String tDirection = (transfer.getAccountFrom() == account.getAccountId()) ? "To:" : "From:";
+            String tParty = (tDirection.equals("To:")) ? appService.getUserByAccountId(transfer.getAccountTo()).getUsername() : appService.getUserByAccountId(transfer.getAccountFrom()).getUsername();
+            BigDecimal tMoney = transfer.getAmount();
+            System.out.println(String.format("%-12s%-6s%-12s%13s", tId, tDirection, tParty, "$" + tMoney));
+        }
+
+        System.out.println("---------");
+
+        // Transfer details option
+        transferChoice = consoleService.promptForInt("Please enter transfer ID to view details (0 to cancel): ");
+        if (transferChoice > 0) {
+            // Retrieve transfer details
+            Transfer selectedTransfer = null;
+            for (Transfer transfer : transfers) {
+                if(transferChoice == transfer.getTransferId()) {
+                    selectedTransfer = transfer;
+                    break;
+                }
+            }
+            if(selectedTransfer == null) {
+                System.out.println("Invalid ID");
+                return;
+            }
 
             // Print transfer details
-        } else if (menuSelection == 0) {
+            System.out.println(
+                    "\n--------------------------------------------\n" +
+                    "Transfer Details\n" +
+                    "--------------------------------------------\n" +
+                    String.format("%-8s%-36s\n", "Id:", selectedTransfer.getTransferId()) +
+                    String.format("%-8s%-36s\n", "From:", appService.getUserByAccountId(selectedTransfer.getAccountFrom()).getUsername()) +
+                    String.format("%-8s%-36s\n", "To:", appService.getUserByAccountId(selectedTransfer.getAccountTo()).getUsername()) +
+                    String.format("%-8s%-36s\n", "Type:", selectedTransfer.getTransferTypeId() == 1 ? "Request" : "Send") +
+                    String.format("%-8s%-36s\n", "Status:",
+                            selectedTransfer.getTransferStatusId() == 1 ? "Pending" :
+                            selectedTransfer.getTransferStatusId() == 2 ? "Approved" : "Rejected") +
+                    String.format("%-8s%-36s", "Amount:", "$" + selectedTransfer.getAmount()));
+            System.out.println("---------");
+        } else if (transferChoice == 0) {
             return;
         } else {
             System.out.println("Invalid selection");

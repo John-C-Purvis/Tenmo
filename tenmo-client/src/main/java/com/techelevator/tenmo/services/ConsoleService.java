@@ -46,13 +46,6 @@ public class ConsoleService {
         System.out.println();
     }
 
-    public void printTransferMenu() {
-        System.out.println();
-        System.out.println("1: View transfer details");
-        System.out.println("0: Exit");
-        System.out.println();
-    }
-
     public UserCredentials promptForCredentials() {
         String username = promptForString("Username: ");
         String password = promptForString("Password: ");

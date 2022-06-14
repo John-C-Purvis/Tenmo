@@ -55,7 +55,8 @@ public class AppService {
     }
 
     public List<Transfer> getTransfersByAccountId(long id) {
-        return null;
+        return new ArrayList<>(Arrays.asList(
+                restTemplate.getForObject(baseUrl + "/users/" + id + "/transfers", Transfer[].class)));
     }
 
     /*
