@@ -60,7 +60,7 @@ public class AppService {
     public List<Transfer> getTransfersByAccountId(long id, String token) {
         HttpEntity<Void> entity = makeAuthEntity(token);
         return new ArrayList<>(Arrays.asList(
-                restTemplate.getForObject(baseUrl + "/transfer/account/" + id, Transfer[].class)));
+                restTemplate.exchange(baseUrl + "/transfer/account/" + id, HttpMethod.GET, entity, Transfer[].class).getBody()));
     }
 
     private HttpEntity<Void> makeAuthEntity(String token) {
