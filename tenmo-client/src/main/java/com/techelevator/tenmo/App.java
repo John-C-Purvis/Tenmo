@@ -216,15 +216,15 @@ public class App {
         transfer.setAmount(transferAmount);
 
         // Initiate transfer of transferAmount from currentUser's account to targetAccount.balance
-        transfer = appService.createTransfer(transfer);
+        transfer = appService.createTransfer(transfer, currentUser.getToken());
 
         // Update account object balances
         currentAccount.setBalance(currentAccount.getBalance().subtract(transferAmount));
         targetAccount.setBalance(targetAccount.getBalance().add(transferAmount));
 
         // Update DB account balances
-        appService.updateAccount(currentAccount.getAccountId(), currentAccount);
-        appService.updateAccount(targetAccount.getAccountId(), targetAccount);
+        appService.updateAccount(currentAccount.getAccountId(), currentAccount, currentUser.getToken());
+        appService.updateAccount(targetAccount.getAccountId(), targetAccount, currentUser.getToken());
 
         System.out.println("\n--------------------------------------------\n" +
                 "Transfer Details\n" +
@@ -235,7 +235,7 @@ public class App {
                 " Type: Send" + "\n" +
                 " Status: Approved" + "\n" +
                 " Amount: " + transfer.getAmount() +
-                "---------\n"
+                "\n---------\n"
         );
     }
 

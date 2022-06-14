@@ -41,16 +41,18 @@ public class AppService {
         return restTemplate.exchange(baseUrl + "/account/" + userId, HttpMethod.GET, entity, Account.class).getBody();
     }
 
-    public void updateAccount(long accountId, Account account) {
+    public void updateAccount(long accountId, Account account, String token) {
         HttpHeaders headers = new HttpHeaders();
+        headers.setBearerAuth(token);
         headers.setContentType(MediaType.APPLICATION_JSON);
 
         HttpEntity<Account> entity = new HttpEntity<>(account, headers);
         restTemplate.put(baseUrl + "/account/" + accountId, entity);
     }
 
-    public Transfer createTransfer(Transfer transfer) {
+    public Transfer createTransfer(Transfer transfer, String token) {
         HttpHeaders headers = new HttpHeaders();
+        headers.setBearerAuth(token);
         headers.setContentType(MediaType.APPLICATION_JSON);
 
         HttpEntity<Transfer> entity = new HttpEntity<>(transfer, headers);
