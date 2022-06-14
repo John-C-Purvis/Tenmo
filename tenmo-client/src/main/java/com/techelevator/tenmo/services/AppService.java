@@ -26,19 +26,12 @@ public class AppService {
     }
 
     public List<Account> getAccountsByUsernameSearch(String searchTerm) {
-        return new ArrayList<>(Arrays.asList(restTemplate.getForObject(baseUrl + "/account/search/" + searchTerm, Account[].class)));
+        return new ArrayList<>(Arrays.asList(
+                restTemplate.getForObject(baseUrl + "/account/search/" + searchTerm, Account[].class)));
     }
 
     public User getUserByAccountId(long id) {
         return restTemplate.getForObject(baseUrl + "/users/" + id, User.class);
-    }
-
-    public Transfer createTransfer(Transfer transfer) {
-        HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(MediaType.APPLICATION_JSON);
-
-        HttpEntity<Transfer> entity = new HttpEntity<>(transfer, headers);
-        return restTemplate.postForObject(baseUrl + "/transfer", entity, Transfer.class);
     }
 
     public Account getAccountById(long userId) {
@@ -52,6 +45,19 @@ public class AppService {
         HttpEntity<Account> entity = new HttpEntity<>(account, headers);
         restTemplate.put(baseUrl + "/account/" + accountId, entity);
     }
+
+    public Transfer createTransfer(Transfer transfer) {
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+
+        HttpEntity<Transfer> entity = new HttpEntity<>(transfer, headers);
+        return restTemplate.postForObject(baseUrl + "/transfer", entity, Transfer.class);
+    }
+
+    public List<Transfer> getTransfersByAccountId(long id) {
+        return null;
+    }
+
     /*
     public List<Transfer> getTransfers(long userId/accountId) {}
 

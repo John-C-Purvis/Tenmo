@@ -39,9 +39,16 @@ public class ConsoleService {
         System.out.println();
         System.out.println("1: View your current balance");
         System.out.println("2: View your past transfers");
-        System.out.println("3: View your pending requests");
-        System.out.println("4: Send TE bucks");
+//        System.out.println("3: View your pending requests");
+        System.out.println("3: Send TE bucks");
 //        System.out.println("5: Request TE bucks");
+        System.out.println("0: Exit");
+        System.out.println();
+    }
+
+    public void printTransferMenu() {
+        System.out.println();
+        System.out.println("1: View transfer details");
         System.out.println("0: Exit");
         System.out.println();
     }

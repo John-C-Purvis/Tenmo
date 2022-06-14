@@ -76,9 +76,9 @@ public class App {
                 viewCurrentBalance();
             } else if (menuSelection == 2) {
                 viewTransferHistory();
+//            } else if (menuSelection == 3) {
+//                viewPendingRequests();
             } else if (menuSelection == 3) {
-                viewPendingRequests();
-            } else if (menuSelection == 4) {
                 sendBucks();
 //            } else if (menuSelection == 5) {
 //                requestBucks();
@@ -99,14 +99,30 @@ public class App {
 
 	private void viewTransferHistory() {
 		// TODO Auto-generated method stub
+        int menuSelection = -1;
+        Account account = appService.getAccountById(currentUser.getUser().getId());
+        List<Transfer> transfers = appService.getTransfersByAccountId(account.getAccountId());
 
+        // Print transfers
+        consoleService.printTransferMenu();
+        menuSelection = consoleService.promptForMenuSelection("Please choose an option: ");
+        if (menuSelection == 1) {
+            // Prompt for transfer id
+            int transferId;
+
+            // Print transfer details
+        } else if (menuSelection == 0) {
+            return;
+        } else {
+            System.out.println("Invalid selection");
+        }
 		
 	}
 
-	private void viewPendingRequests() {
-		// TODO Auto-generated method stub
-		
-	}
+//	private void viewPendingRequests() {
+//		// TODO Auto-generated method stub
+//
+//	}
 
     private void sendBucks() {
         // TODO Auto-generated method stub
