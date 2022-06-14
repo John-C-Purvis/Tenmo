@@ -44,7 +44,7 @@ public class TenmoController {
         return accountDao.getAccountsByUsernameSearch(searchTerm);
     }
 
-    @PutMapping(path = "/users/{id}")
+    @PutMapping(path = "/account/{id}")
     public void updateAccount(@PathVariable long id, @RequestBody Account account) {
         accountDao.updateAccount(account);
     }
@@ -64,7 +64,7 @@ public class TenmoController {
      * TransferDao methods
      */
 
-    @GetMapping(path = "/users/{accountId}/transfers")
+    @GetMapping(path = "/transfer/account/{accountId}")
     public List<Transfer> getTransfers(@PathVariable long accountId) {
         return transferDao.getAllTransfersByAccountID(accountId);
     }

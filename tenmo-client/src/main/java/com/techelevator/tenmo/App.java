@@ -155,7 +155,6 @@ public class App {
         } else {
             System.out.println("Invalid selection");
         }
-		
 	}
 
 //	private void viewPendingRequests() {
@@ -227,7 +226,7 @@ public class App {
         appService.updateAccount(currentAccount.getAccountId(), currentAccount);
         appService.updateAccount(targetAccount.getAccountId(), targetAccount);
 
-        System.out.println("--------------------------------------------\n" +
+        System.out.println("\n--------------------------------------------\n" +
                 "Transfer Details\n" +
                 "--------------------------------------------\n" +
                 " Id: " + transfer.getTransferId() + "\n" +
@@ -235,10 +234,9 @@ public class App {
                 " To: " + appService.getUserByAccountId(targetAccount.getAccountId()).getUsername() + "\n" +
                 " Type: Send" + "\n" +
                 " Status: Approved" + "\n" +
-                " Amount: " + transfer.getAmount()
+                " Amount: " + transfer.getAmount() +
+                "---------\n"
         );
-
-
     }
 
 //	private void requestBucks() {
