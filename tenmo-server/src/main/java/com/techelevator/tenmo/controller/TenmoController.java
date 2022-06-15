@@ -39,7 +39,8 @@ public class TenmoController {
 
     @GetMapping(path = "/account/{id}")
     public Account getAccountById(@PathVariable long id, Principal principal) throws Exception {
-        if (principal.getName().equals(getUserByAccountId(accountDao.getAccount(id).getAccountId()).getUsername())){
+        if (principal.getName().equals(getUserByAccountId(
+                accountDao.getAccount(id).getAccountId()).getUsername())){
             return accountDao.getAccount(id);
         }
         throw new Exception("Unauthorized");

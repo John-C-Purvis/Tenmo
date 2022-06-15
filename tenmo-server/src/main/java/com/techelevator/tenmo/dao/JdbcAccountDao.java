@@ -69,7 +69,8 @@ public class JdbcAccountDao implements AccountDao{
         String sql = "UPDATE account SET account_id = ?, user_id = ?, balance = ? WHERE account_id = ?;";
         try {
             jdbcTemplate.update(
-                    sql, account.getAccountId(), account.getUserId(), account.getBalance(), account.getAccountId());
+                    sql, account.getAccountId(), account.getUserId(),
+                    account.getBalance(), account.getAccountId());
         } catch (Exception e) {
             System.out.println(e.getMessage());
         }

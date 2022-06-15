@@ -101,7 +101,8 @@ public class App {
 		// TODO Auto-generated method stub
         int transferChoice = -1;
         Account account = appService.getAccountById(currentUser.getUser().getId(), currentUser.getToken());
-        List<Transfer> transfers = appService.getTransfersByAccountId(account.getAccountId(), currentUser.getToken());
+        List<Transfer> transfers =
+                appService.getTransfersByAccountId(account.getAccountId(), currentUser.getToken());
 
         // Print transfers
         System.out.println(
@@ -113,7 +114,11 @@ public class App {
         for (Transfer transfer : transfers) {
             long tId = transfer.getTransferId();
             String tDirection = (transfer.getAccountFrom() == account.getAccountId()) ? "To:" : "From:";
-            String tParty = (tDirection.equals("To:")) ? appService.getUserByAccountId(transfer.getAccountTo(), currentUser.getToken()).getUsername() : appService.getUserByAccountId(transfer.getAccountFrom(), currentUser.getToken()).getUsername();
+            String tParty = (tDirection.equals("To:")) ?
+                    appService.getUserByAccountId(
+                            transfer.getAccountTo(), currentUser.getToken()).getUsername() :
+                    appService.getUserByAccountId(
+                            transfer.getAccountFrom(), currentUser.getToken()).getUsername();
             BigDecimal tMoney = transfer.getAmount();
             System.out.println(String.format("%-12s%-6s%-12s%13s", tId, tDirection, tParty, "$" + tMoney));
         }
@@ -142,9 +147,14 @@ public class App {
                     "Transfer Details\n" +
                     "--------------------------------------------\n" +
                     String.format("%-8s%-36s\n", "Id:", selectedTransfer.getTransferId()) +
-                    String.format("%-8s%-36s\n", "From:", appService.getUserByAccountId(selectedTransfer.getAccountFrom(), currentUser.getToken()).getUsername()) +
-                    String.format("%-8s%-36s\n", "To:", appService.getUserByAccountId(selectedTransfer.getAccountTo(), currentUser.getToken()).getUsername()) +
-                    String.format("%-8s%-36s\n", "Type:", selectedTransfer.getTransferTypeId() == 1 ? "Request" : "Send") +
+                    String.format("%-8s%-36s\n", "From:",
+                            appService.getUserByAccountId(
+                                    selectedTransfer.getAccountFrom(), currentUser.getToken()).getUsername()) +
+                    String.format("%-8s%-36s\n", "To:",
+                            appService.getUserByAccountId(
+                                    selectedTransfer.getAccountTo(), currentUser.getToken()).getUsername()) +
+                    String.format("%-8s%-36s\n", "Type:",
+                            selectedTransfer.getTransferTypeId() == 1 ? "Request" : "Send") +
                     String.format("%-8s%-36s\n", "Status:",
                             selectedTransfer.getTransferStatusId() == 1 ? "Pending" :
                             selectedTransfer.getTransferStatusId() == 2 ? "Approved" : "Rejected") +
@@ -231,7 +241,8 @@ public class App {
                 "--------------------------------------------\n" +
                 " Id: " + transfer.getTransferId() + "\n" +
                 " From: " + currentUser.getUser().getUsername() + "\n" +
-                " To: " + appService.getUserByAccountId(targetAccount.getAccountId(), currentUser.getToken()).getUsername() + "\n" +
+                " To: " + appService.getUserByAccountId(
+                        targetAccount.getAccountId(), currentUser.getToken()).getUsername() + "\n" +
                 " Type: Send" + "\n" +
                 " Status: Approved" + "\n" +
                 " Amount: " + transfer.getAmount() +

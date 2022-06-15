@@ -28,7 +28,9 @@ public class AppService {
     public List<Account> getAccountsByUsernameSearch(String searchTerm, String token) {
         HttpEntity<Void> entity = makeAuthEntity(token);
         return new ArrayList<>(Arrays.asList(
-                restTemplate.exchange(baseUrl + "/account/search/" + searchTerm,HttpMethod.GET, entity, Account[].class).getBody()));
+                restTemplate.exchange(
+                        baseUrl + "/account/search/" + searchTerm,
+                        HttpMethod.GET, entity, Account[].class).getBody()));
     }
 
     public User getUserByAccountId(long id, String token) {
@@ -38,7 +40,8 @@ public class AppService {
 
     public Account getAccountById(long userId, String token) {
         HttpEntity<Void> entity = makeAuthEntity(token);
-        return restTemplate.exchange(baseUrl + "/account/" + userId, HttpMethod.GET, entity, Account.class).getBody();
+        return restTemplate.exchange(
+                baseUrl + "/account/" + userId, HttpMethod.GET, entity, Account.class).getBody();
     }
 
     public void updateAccount(long accountId, Account account, String token) {
@@ -62,7 +65,9 @@ public class AppService {
     public List<Transfer> getTransfersByAccountId(long id, String token) {
         HttpEntity<Void> entity = makeAuthEntity(token);
         return new ArrayList<>(Arrays.asList(
-                restTemplate.exchange(baseUrl + "/transfer/account/" + id, HttpMethod.GET, entity, Transfer[].class).getBody()));
+                restTemplate.exchange(
+                        baseUrl + "/transfer/account/" + id,
+                        HttpMethod.GET, entity, Transfer[].class).getBody()));
     }
 
     private HttpEntity<Void> makeAuthEntity(String token) {
