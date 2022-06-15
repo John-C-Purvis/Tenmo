@@ -92,25 +92,24 @@ public class App {
     }
 
 	private void viewCurrentBalance() {
-		// TODO Auto-generated method stub
         System.out.println("Your current account balance is: $" +
                 appService.getBalance(currentUser.getUser().getId(), currentUser.getToken()));
 	}
 
 	private void viewTransferHistory() {
-		// TODO Auto-generated method stub
         int transferChoice = -1;
         Account account = appService.getAccountById(currentUser.getUser().getId(), currentUser.getToken());
         List<Transfer> transfers =
                 appService.getTransfersByAccountId(account.getAccountId(), currentUser.getToken());
 
-        // Print transfers
+        // Print transfers for account
         System.out.println(
                 "\n-------------------------------------------\n" +
                 "Transfers\n" +
                 String.format("%-12s%-24s%7s\n", "ID", "From/To", "Amount") +
                 "-------------------------------------------");
 
+        // Loop through account transfers to populate display
         for (Transfer transfer : transfers) {
             long tId = transfer.getTransferId();
             String tDirection = (transfer.getAccountFrom() == account.getAccountId()) ? "To:" : "From:";
@@ -128,6 +127,7 @@ public class App {
         // Transfer details option
         transferChoice = consoleService.promptForInt("Please enter transfer ID to view details (0 to cancel): ");
         if (transferChoice > 0) {
+
             // Retrieve transfer details
             Transfer selectedTransfer = null;
             for (Transfer transfer : transfers) {
@@ -173,23 +173,28 @@ public class App {
 //	}
 
     private void sendBucks() {
-        // TODO Auto-generated method stub
-
         Account currentAccount = appService.getAccountById(currentUser.getUser().getId(), currentUser.getToken());
         String searchTerm = consoleService.promptForString(
                 "Please enter the username you'd like to send TEnmo Bucks to: ");
+
+        // Print list of accounts with usernames
         System.out.println("-------------------------------------------\n" +
                 "Account\n" +
                 "ID          Name\n" +
                 "-------------------------------------------");
+
         List<Account> accounts = appService.getAccountsByUsernameSearch(searchTerm, currentUser.getToken());
+
         for (Account account : accounts) {
             System.out.println(account.getAccountId() + "     " +
                     (appService.getUserByAccountId(account.getAccountId(), currentUser.getToken()).getUsername()));
         }
         System.out.println("---------");
+
+        // Select recipient account
         long accountSelection = consoleService.promptForInt(
                 "Enter ID of account you are sending to (0 to cancel):");
+
         Account targetAccount = null;
         for(Account account : accounts) {
             if(account.getAccountId() == accountSelection) {
@@ -197,6 +202,7 @@ public class App {
                 break;
             }
         }
+
         if(targetAccount == null) {
             System.out.println("No account was selected.");
             return;
@@ -205,6 +211,8 @@ public class App {
             System.out.println("Self-selection is not permitted.");
             return;
         }
+
+        // Prompt for transfer amount
         BigDecimal transferAmount = consoleService.promptForBigDecimal("Enter amount:");
         if(transferAmount.compareTo(BigDecimal.valueOf(0.00)) <= 0) {
             System.out.println("Transfer canceled (amount must be greater than 0.00)");
@@ -225,7 +233,7 @@ public class App {
         transfer.setAccountTo(targetAccount.getAccountId());
         transfer.setAmount(transferAmount);
 
-        // Initiate transfer of transferAmount from currentUser's account to targetAccount.balance
+        // Create transfer
         transfer = appService.createTransfer(transfer, currentUser.getToken());
 
         // Update account object balances
@@ -236,6 +244,7 @@ public class App {
         appService.updateAccount(currentAccount.getAccountId(), currentAccount, currentUser.getToken());
         appService.updateAccount(targetAccount.getAccountId(), targetAccount, currentUser.getToken());
 
+        // Print approved transaction details
         System.out.println("\n--------------------------------------------\n" +
                 "Transfer Details\n" +
                 "--------------------------------------------\n" +
