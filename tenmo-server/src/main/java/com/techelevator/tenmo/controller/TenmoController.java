@@ -6,6 +6,7 @@ import com.techelevator.tenmo.dao.UserDao;
 import com.techelevator.tenmo.model.Account;
 import com.techelevator.tenmo.model.Transfer;
 import com.techelevator.tenmo.model.User;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
@@ -32,18 +33,18 @@ public class TenmoController {
      * AccountDao methods
      */
 
-    @GetMapping(path = "/account")
-    public List<Account> getAccounts() {
-        return accountDao.getAllAccounts();
-    }
+//    @GetMapping(path = "/account")
+//    public List<Account> getAccounts() {
+//        return accountDao.getAllAccounts();
+//    }
 
     @GetMapping(path = "/account/{id}")
-    public Account getAccountById(@PathVariable long id, Principal principal) throws Exception {
+    public Account getAccountById(@PathVariable long id, Principal principal) throws AccessDeniedException {
         if (principal.getName().equals(getUserByAccountId(
                 accountDao.getAccount(id).getAccountId()).getUsername())){
             return accountDao.getAccount(id);
         }
-        throw new Exception("Unauthorized");
+        throw new AccessDeniedException("Access Denied");
     }
 
     @GetMapping(path = "/account/search/{searchTerm}")
