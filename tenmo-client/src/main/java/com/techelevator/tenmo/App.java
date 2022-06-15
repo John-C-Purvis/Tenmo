@@ -102,6 +102,12 @@ public class App {
         List<Transfer> transfers =
                 appService.getTransfersByAccountId(account.getAccountId(), currentUser.getToken());
 
+        // No transfers found
+        if (transfers.size() == 0) {
+            System.out.println("\nNo transfers available.");
+            return;
+        }
+
         // Print transfers for account
         System.out.println(
                 "\n-------------------------------------------\n" +
@@ -137,7 +143,7 @@ public class App {
                 }
             }
             if(selectedTransfer == null) {
-                System.out.println("Invalid ID");
+                System.out.println("\nInvalid ID");
                 return;
             }
 
@@ -177,13 +183,19 @@ public class App {
         String searchTerm = consoleService.promptForString(
                 "Please enter the username you'd like to send TEnmo Bucks to: ");
 
+        List<Account> accounts = appService.getAccountsByUsernameSearch(searchTerm, currentUser.getToken());
+
+        // No account found
+        if (accounts.size() == 0) {
+            System.out.println("\nNo account was found.");
+            return;
+        }
+
         // Print list of accounts with usernames
         System.out.println("-------------------------------------------\n" +
                 "Account\n" +
                 "ID          Name\n" +
                 "-------------------------------------------");
-
-        List<Account> accounts = appService.getAccountsByUsernameSearch(searchTerm, currentUser.getToken());
 
         for (Account account : accounts) {
             System.out.println(account.getAccountId() + "     " +
