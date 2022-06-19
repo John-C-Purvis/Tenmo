@@ -34,7 +34,7 @@ public class JdbcUserDao implements UserDao {
     }
 
     @Override
-    public User findUserByAccountId(long accountId) {
+    public String findUsernameByAccountId(long accountId) {
         User user = null;
         String sql = "SELECT account.user_id, tenmo_user.username, tenmo_user.password_hash " +
                 "FROM account " +
@@ -44,7 +44,7 @@ public class JdbcUserDao implements UserDao {
         if(results.next()) {
             user = mapRowToUser(results);
         }
-        return user;
+        return user.getUsername();
     }
 
     @Override

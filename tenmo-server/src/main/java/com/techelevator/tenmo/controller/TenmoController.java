@@ -5,11 +5,11 @@ import com.techelevator.tenmo.dao.TransferDao;
 import com.techelevator.tenmo.dao.UserDao;
 import com.techelevator.tenmo.model.Account;
 import com.techelevator.tenmo.model.Transfer;
-import com.techelevator.tenmo.model.User;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
-
+import java.math.BigDecimal;
 import java.security.Principal;
 import java.util.List;
 
@@ -33,28 +33,19 @@ public class TenmoController {
      * AccountDao methods
      */
 
-//    @GetMapping(path = "/account")
-//    public List<Account> getAccounts() {
-//        return accountDao.getAllAccounts();
-//    }
-
     @GetMapping(path = "/account/{id}")
-    public Account getAccountById(@PathVariable long id, Principal principal) throws AccessDeniedException {
-        if (principal.getName().equals(getUserByAccountId(
-                accountDao.getAccount(id).getAccountId()).getUsername())){
+    public Account getAccountByUserId(@PathVariable long id, Principal principal)
+            throws AccessDeniedException {
+        if (principal.getName().equals(getUsernameByAccountId(
+                accountDao.getAccount(id).getAccountId()))){
             return accountDao.getAccount(id);
         }
         throw new AccessDeniedException("Access Denied");
     }
 
     @GetMapping(path = "/account/search/{searchTerm}")
-    public List<Account> getAccountsByUsernameSearch(@PathVariable String searchTerm) {
-        return accountDao.getAccountsByUsernameSearch(searchTerm);
-    }
-
-    @PutMapping(path = "/account/{id}")
-    public void updateAccount(@PathVariable long id, @RequestBody Account account) {
-        accountDao.updateAccount(account);
+    public List<Long> getAccountIdsByUsernameSearch(@PathVariable String searchTerm) {
+        return accountDao.getAccountIdsByUsernameSearch(searchTerm);
     }
 
 
@@ -63,8 +54,8 @@ public class TenmoController {
      */
 
     @GetMapping(path = "/users/{id}")
-    public User getUserByAccountId(@PathVariable long id) {
-        return userDao.findUserByAccountId(id);
+    public String getUsernameByAccountId(@PathVariable long id) {
+        return userDao.findUsernameByAccountId(id);
     }
 
 
@@ -73,26 +64,28 @@ public class TenmoController {
      */
 
     @GetMapping(path = "/transfer/account/{accountId}")
-    public List<Transfer> getTransfers(@PathVariable long accountId) {
-        return transferDao.getAllTransfersByAccountID(accountId);
-    }
-
-    @GetMapping(path = "/transfer/{id}")
-    public Transfer getTransferById(@PathVariable long id) {
-        Transfer transfer = null;
-        try {
-            transfer = transferDao.getTransfer(id);
-        } catch (Exception e) {
-            System.out.println(e.getMessage());
+    public List<Transfer> getTransfers(@PathVariable long accountId, Principal principal)
+            throws AccessDeniedException {
+        if (principal.getName().equals(
+                getUsernameByAccountId(accountId))){
+            return transferDao.getAllTransfersByAccountID(accountId);
         }
-        return transfer;
+        throw new AccessDeniedException("Access denied");
     }
 
     @PostMapping(path = "/transfer")
-    public Transfer addTransfer(@RequestBody Transfer transfer) {
-        if (transfer != null) {
+    @ResponseStatus(HttpStatus.CREATED)
+    public Transfer addTransfer(@RequestBody Transfer transfer, Principal principal)
+            throws AccessDeniedException{
+        if (principal.getName().equals(getUsernameByAccountId(transfer.getAccountFrom()))
+                && transfer.getAccountTo() != transfer.getAccountFrom()
+                && transfer.getAmount().compareTo(
+                accountDao.getAccountBalance(transfer.getAccountFrom())) <= 0
+                && transfer.getTransferTypeId() == 2
+                && transfer.getTransferStatusId() == 2
+                && transfer.getAmount().compareTo(new BigDecimal("0")) > 0) {
             return transferDao.createTransfer(transfer);
         }
-        return null;
+        throw new AccessDeniedException("Access Denied");
     }
 }

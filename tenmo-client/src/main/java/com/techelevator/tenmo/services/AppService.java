@@ -2,8 +2,10 @@ package com.techelevator.tenmo.services;
 
 import com.techelevator.tenmo.model.Account;
 import com.techelevator.tenmo.model.Transfer;
-import com.techelevator.tenmo.model.User;
-import org.springframework.http.*;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.MediaType;
 import org.springframework.web.client.RestTemplate;
 
 import java.math.BigDecimal;
@@ -25,32 +27,23 @@ public class AppService {
                 baseUrl + "/account/" + userId, HttpMethod.GET, entity, Account.class).getBody().getBalance();
     }
 
-    public List<Account> getAccountsByUsernameSearch(String searchTerm, String token) {
+    public List<Long> getAccountIdsByUsernameSearch(String searchTerm, String token) {
         HttpEntity<Void> entity = makeAuthEntity(token);
         return new ArrayList<>(Arrays.asList(
                 restTemplate.exchange(
                         baseUrl + "/account/search/" + searchTerm,
-                        HttpMethod.GET, entity, Account[].class).getBody()));
+                        HttpMethod.GET, entity, Long[].class).getBody()));
     }
 
-    public User getUserByAccountId(long id, String token) {
+    public String getUsernameByAccountId(long id, String token) {
         HttpEntity<Void> entity = makeAuthEntity(token);
-        return restTemplate.exchange(baseUrl + "/users/" + id, HttpMethod.GET, entity, User.class).getBody();
+        return restTemplate.exchange(baseUrl + "/users/" + id, HttpMethod.GET, entity, String.class).getBody();
     }
 
     public Account getAccountById(long userId, String token) {
         HttpEntity<Void> entity = makeAuthEntity(token);
         return restTemplate.exchange(
                 baseUrl + "/account/" + userId, HttpMethod.GET, entity, Account.class).getBody();
-    }
-
-    public void updateAccount(long accountId, Account account, String token) {
-        HttpHeaders headers = new HttpHeaders();
-        headers.setBearerAuth(token);
-        headers.setContentType(MediaType.APPLICATION_JSON);
-
-        HttpEntity<Account> entity = new HttpEntity<>(account, headers);
-        restTemplate.put(baseUrl + "/account/" + accountId, entity);
     }
 
     public Transfer createTransfer(Transfer transfer, String token) {

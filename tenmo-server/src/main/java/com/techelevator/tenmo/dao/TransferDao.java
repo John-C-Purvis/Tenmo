@@ -6,12 +6,8 @@ import java.util.List;
 
 public interface TransferDao {
 
-    Transfer getTransfer(long transferId);
-
     List<Transfer> getAllTransfersByAccountID(long accountId);
 
     Transfer createTransfer(Transfer transfer);
-
-    boolean updateTransfer(Transfer transfer);
 
 }

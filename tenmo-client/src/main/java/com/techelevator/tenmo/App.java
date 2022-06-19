@@ -91,12 +91,12 @@ public class App {
         }
     }
 
-	private void viewCurrentBalance() {
+    private void viewCurrentBalance() {
         System.out.println("Your current account balance is: $" +
                 appService.getBalance(currentUser.getUser().getId(), currentUser.getToken()));
-	}
+    }
 
-	private void viewTransferHistory() {
+    private void viewTransferHistory() {
         int transferChoice = -1;
         Account account = appService.getAccountById(currentUser.getUser().getId(), currentUser.getToken());
         List<Transfer> transfers =
@@ -120,10 +120,10 @@ public class App {
             long tId = transfer.getTransferId();
             String tDirection = (transfer.getAccountFrom() == account.getAccountId()) ? "To:" : "From:";
             String tParty = (tDirection.equals("To:")) ?
-                    appService.getUserByAccountId(
-                            transfer.getAccountTo(), currentUser.getToken()).getUsername() :
-                    appService.getUserByAccountId(
-                            transfer.getAccountFrom(), currentUser.getToken()).getUsername();
+                    appService.getUsernameByAccountId(
+                            transfer.getAccountTo(), currentUser.getToken()) :
+                    appService.getUsernameByAccountId(
+                            transfer.getAccountFrom(), currentUser.getToken());
             BigDecimal tMoney = transfer.getAmount();
             System.out.println(String.format("%-12s%-6s%-12s%13s", tId, tDirection, tParty, "$" + tMoney));
         }
@@ -154,16 +154,16 @@ public class App {
                     "--------------------------------------------\n" +
                     String.format("%-8s%-36s\n", "Id:", selectedTransfer.getTransferId()) +
                     String.format("%-8s%-36s\n", "From:",
-                            appService.getUserByAccountId(
-                                    selectedTransfer.getAccountFrom(), currentUser.getToken()).getUsername()) +
+                            appService.getUsernameByAccountId(
+                                    selectedTransfer.getAccountFrom(), currentUser.getToken())) +
                     String.format("%-8s%-36s\n", "To:",
-                            appService.getUserByAccountId(
-                                    selectedTransfer.getAccountTo(), currentUser.getToken()).getUsername()) +
+                            appService.getUsernameByAccountId(
+                                    selectedTransfer.getAccountTo(), currentUser.getToken())) +
                     String.format("%-8s%-36s\n", "Type:",
                             selectedTransfer.getTransferTypeId() == 1 ? "Request" : "Send") +
                     String.format("%-8s%-36s\n", "Status:",
                             selectedTransfer.getTransferStatusId() == 1 ? "Pending" :
-                            selectedTransfer.getTransferStatusId() == 2 ? "Approved" : "Rejected") +
+                                    selectedTransfer.getTransferStatusId() == 2 ? "Approved" : "Rejected") +
                     String.format("%-8s%-36s", "Amount:", "$" + selectedTransfer.getAmount()));
             System.out.println("---------");
         } else if (transferChoice == 0) {
@@ -171,35 +171,32 @@ public class App {
         } else {
             System.out.println("Invalid selection");
         }
-	}
-
-//	private void viewPendingRequests() {
-//		// TODO Auto-generated method stub
-//
-//	}
+    }
 
     private void sendBucks() {
-        Account currentAccount = appService.getAccountById(currentUser.getUser().getId(), currentUser.getToken());
+        Account currentAccount =
+                appService.getAccountById(currentUser.getUser().getId(), currentUser.getToken());
         String searchTerm = consoleService.promptForString(
                 "Please enter the username you'd like to send TEnmo Bucks to: ");
 
-        List<Account> accounts = appService.getAccountsByUsernameSearch(searchTerm, currentUser.getToken());
+        List<Long> accountIds =
+                appService.getAccountIdsByUsernameSearch(searchTerm, currentUser.getToken());
 
         // No account found
-        if (accounts.size() == 0) {
+        if (accountIds.size() == 0) {
             System.out.println("\nNo account was found.");
             return;
         }
 
-        // Print list of accounts with usernames
+        // Print list of account numbers with usernames
         System.out.println("-------------------------------------------\n" +
                 "Account\n" +
                 "ID          Name\n" +
                 "-------------------------------------------");
 
-        for (Account account : accounts) {
-            System.out.println(account.getAccountId() + "     " +
-                    (appService.getUserByAccountId(account.getAccountId(), currentUser.getToken()).getUsername()));
+        for (Long accountId : accountIds) {
+            System.out.println(accountId + "     " +
+                    (appService.getUsernameByAccountId(accountId, currentUser.getToken())));
         }
         System.out.println("---------");
 
@@ -207,19 +204,19 @@ public class App {
         long accountSelection = consoleService.promptForInt(
                 "Enter ID of account you are sending to (0 to cancel):");
 
-        Account targetAccount = null;
-        for(Account account : accounts) {
-            if(account.getAccountId() == accountSelection) {
-                targetAccount = account;
+        Long targetAccountId = null;
+        for(Long accountId : accountIds) {
+            if(accountId == accountSelection) {
+                targetAccountId = accountId;
                 break;
             }
         }
 
-        if(targetAccount == null) {
+        if(targetAccountId == null) {
             System.out.println("No account was selected.");
             return;
         }
-        if(targetAccount.getUserId() == currentUser.getUser().getId()) {
+        if(targetAccountId == currentAccount.getAccountId()) {
             System.out.println("Self-selection is not permitted.");
             return;
         }
@@ -242,19 +239,11 @@ public class App {
         transfer.setTransferTypeId(2);
         transfer.setTransferStatusId(2);
         transfer.setAccountFrom(currentAccount.getAccountId());
-        transfer.setAccountTo(targetAccount.getAccountId());
+        transfer.setAccountTo(targetAccountId);
         transfer.setAmount(transferAmount);
 
         // Create transfer
         transfer = appService.createTransfer(transfer, currentUser.getToken());
-
-        // Update account object balances
-        currentAccount.setBalance(currentAccount.getBalance().subtract(transferAmount));
-        targetAccount.setBalance(targetAccount.getBalance().add(transferAmount));
-
-        // Update DB account balances
-        appService.updateAccount(currentAccount.getAccountId(), currentAccount, currentUser.getToken());
-        appService.updateAccount(targetAccount.getAccountId(), targetAccount, currentUser.getToken());
 
         // Print approved transaction details
         System.out.println("\n--------------------------------------------\n" +
@@ -262,18 +251,11 @@ public class App {
                 "--------------------------------------------\n" +
                 " Id: " + transfer.getTransferId() + "\n" +
                 " From: " + currentUser.getUser().getUsername() + "\n" +
-                " To: " + appService.getUserByAccountId(
-                        targetAccount.getAccountId(), currentUser.getToken()).getUsername() + "\n" +
+                " To: " + appService.getUsernameByAccountId(targetAccountId, currentUser.getToken()) + "\n" +
                 " Type: Send" + "\n" +
                 " Status: Approved" + "\n" +
                 " Amount: " + transfer.getAmount() +
                 "\n---------\n"
         );
     }
-
-//	private void requestBucks() {
-//		// TODO Auto-generated method stub
-//
-//	}
-
 }
